@@ -48,7 +48,10 @@ class Model(nn.Module):
         self.terminal_vel = arg.TERMINAL_VEL
         self.episode_len = arg.EPISODE_LEN
         self.episode_time = arg.EPISODE_LEN * self.dt
-        self.box = arg.WORLD_SIZE #initial value
+        self.world_size = arg.WORLD_SIZE
+        self.BOX_STEP_SIZE = arg.BOX_STEP_SIZE
+
+        self.box = 1.0 #arg.WORLD_SIZE #initial value
         self.rendering = Render()
         self.action_vel_weight = arg.action_vel_weight
         self.action_ang_weight = arg.action_ang_weight
@@ -82,8 +85,8 @@ class Model(nn.Module):
 
         self.time = torch.zeros(1)
         min_r = self.goal_radius.item()
-        #if self.box > 1.0:
-            #min_r = self.box - BOX_STEP_SIZE
+        if self.world_size > 1.0:
+            self.box = min(self.world_size, self.box + self.BOX_STEP_SIZE)
         r = torch.zeros(1).uniform_(min_r, self.box) # GOAL_RADIUS, self.box
         loc_ang = torch.zeros(1).uniform_(-pi, pi) # location angel: to determine initial location
         px = r * torch.cos(loc_ang)

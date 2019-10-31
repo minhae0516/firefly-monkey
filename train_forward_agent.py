@@ -205,8 +205,7 @@ while tot_t <= arg.TOT_T:
     if episode % 500 == 0 and episode != 0:
         ep_time_log.to_csv(path_or_buf='../firefly-monkey-data/data/' + filename + '_log.csv', index=False)
 
-        print("Ep: {}, steps: {}, std: {:0.2f}, ave_reward: {:0.3f}, hit ratio: {:0.3f}".format(episode, np.mean(time_log), noise.scale,
-                                                                                                np.mean(rewards), avg_hit_ratio[-1]))
+        print("Ep: {}, steps: {}, std: {:0.2f}, box:{:0.2f}, ave_reward: {:0.3f}, hit ratio: {:0.3f}".format(episode, np.mean(time_log), noise.scale, env.box, np.mean(rewards), avg_hit_ratio[-1]))
         plt.figure()
         plt.plot(policy_loss_log)
         plt.savefig('../firefly-monkey-data/data/' + filename + 'policy_loss_log' + '.jpg', format='jpg')

@@ -119,7 +119,7 @@ class Agent():
             print("Saved to " + self.file)
 
     def load(self, filename):
-        file = '../firefly-inverse-data/trained_agent/'+filename+'.pth.tar'
+        file = '../firefly-monkey-data/trained_agent/'+filename+'.pth.tar'
         state = torch.load(file, map_location=lambda storage, loc: storage)
         if self.args != state['args']:
             print('Agent parameters from file are different from call')
@@ -136,7 +136,7 @@ class Agent():
         return
 
     def create_save_file(self, filename):
-        path = '../firefly-inverse-data/trained_agent'
+        path = '../firefly-monkey-data/trained_agent'
         os.makedirs(path, exist_ok=True)
         if filename == None:
             self.file = next_path(path + '/' + 'ddpgmodel_%s.pth.tar')

@@ -30,19 +30,27 @@ torch.backends.cudnn.benchmark = False
 import datetime
 import pandas as pd
 
-filename = '20191016-205855' # agent information
-df = pd.read_csv('../firefly-inverse-data/data/' + filename + '_log.csv',
-                 usecols=['discount_factor','process gain forward', 'process gain angular', 'process noise std forward',
-                          'process noise std angular', 'obs gain forward', 'obs gain angular', 'obs noise std forward',
-                          'obs noise std angular', 'goal radius'])
+filename = '20191029-145344-301002' # agent information
 
-DISCOUNT_FACTOR = df['discount_factor'][0]
-gains_range = [np.floor(df['process gain forward'].min()), np.ceil(df['process gain forward'].max()),
-               np.floor(df['process gain angular'].min()), np.ceil(df['process gain angular'].max())]
+learning_arg = torch.load('../firefly-monkey-data/data/20191029-145344_arg.pkl')
 
-std_range = [df['process noise std forward'].min(), df['process noise std forward'].max(),
-               df['process noise std angular'].min(), df['process noise std angular'].max()]
-goal_radius_range = [df['goal radius'].min(), df['goal radius'].max()]
+DISCOUNT_FACTOR = learning_arg['argument']['DISCOUNT_FACTOR']
+gains_range = learning_arg['argument']['gains_range']
+std_range = learning_arg['argument']['std_range']
+goal_radius_range = learning_arg['argument']['goal_radius_range']
+
+# df = pd.read_csv('../firefly-inverse-data/data/' + filename + '_log.csv',
+#                  usecols=['discount_factor','process gain forward', 'process gain angular', 'process noise std forward',
+#                           'process noise std angular', 'obs gain forward', 'obs gain angular', 'obs noise std forward',
+#                           'obs noise std angular', 'goal radius'])
+#
+# DISCOUNT_FACTOR = df['discount_factor'][0]
+# gains_range = [np.floor(df['process gain forward'].min()), np.ceil(df['process gain forward'].max()),
+#                np.floor(df['process gain angular'].min()), np.ceil(df['process gain angular'].max())]
+#
+# std_range = [df['process noise std forward'].min(), df['process noise std forward'].max(),
+#                df['process noise std angular'].min(), df['process noise std angular'].max()]
+# goal_radius_range = [df['goal radius'].min(), df['goal radius'].max()]
 
 
 

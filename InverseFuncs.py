@@ -62,7 +62,7 @@ def trajectory(agent, theta, TOT_T, env, arg, gains_range, std_range, goal_radiu
         b_traj.append(b_traj_ep)
     return x_traj, obs_traj, a_traj, b_traj
 
-
+"""
 def getLoss(agent, x_traj, obs_traj, a_traj, theta, env, gains_range, std_range):
     logPr = torch.FloatTensor([])
 
@@ -78,7 +78,7 @@ def getLoss(agent, x_traj, obs_traj, a_traj, theta, env, gains_range, std_range)
         a_traj_ep = a_traj[ep]
         logPr_ep = torch.zeros(1)
         t = torch.zeros(1)
-        b, state, _, _ = agent.Bstep.reset(x_traj_ep[0], t, pro_gains, pro_noise_stds, goal_radius, gains_range, std_range, obs_gains, obs_noise_stds)  # reset monkey's internal model
+        b, state, _, _ = agent.Bstep.reset(x_traj_ep[0].view(-1), t, pro_gains, pro_noise_stds, goal_radius, gains_range, std_range, obs_gains, obs_noise_stds)  # reset monkey's internal model
 
         for it, next_ox in enumerate(obs_traj_ep):
             action = agent.actor(state)
@@ -96,8 +96,8 @@ def getLoss(agent, x_traj, obs_traj, a_traj, theta, env, gains_range, std_range)
     #neglogPr = -1 * logPr
     return logPr.sum()
 
-
 """
+
 def getLoss(agent, x_traj, obs_traj, a_traj, theta, env, gains_range, std_range):
     logPr = torch.FloatTensor([])
 
@@ -112,7 +112,7 @@ def getLoss(agent, x_traj, obs_traj, a_traj, theta, env, gains_range, std_range)
         a_traj_ep = a_traj[ep]
         logPr_ep = torch.zeros(1)
         t = torch.zeros(1)
-        x = x_traj_ep[0]
+        x = x_traj_ep[0].view(-1)
         b, state, _, _ = agent.Bstep.reset(x, t, pro_gains, pro_noise_stds, goal_radius, gains_range,
                                            std_range, obs_gains, obs_noise_stds)  # reset monkey's internal model
 
@@ -134,7 +134,7 @@ def getLoss(agent, x_traj, obs_traj, a_traj, theta, env, gains_range, std_range)
         logPr = torch.cat([logPr, logPr_ep])
 
     return logPr.sum()
-"""
+
 
 def reset_theta(gains_range, std_range, goal_radius_range):
     pro_gains = torch.zeros(2)

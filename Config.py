@@ -24,18 +24,19 @@ class Config:
 
         self.TOT_T = 2000000000000  # total number of time steps for this code
 
-        self.BATCH_SIZE = 128  # for replay memory (default:64)
+        self.BATCH_SIZE = 64  # for replay memory (default:64)
         self.REWARD = 10  # for max reward
-        self.NUM_EPOCHS = 2# for replay memory
+        self.NUM_EPOCHS = 4# for replay memory
         self.DISCOUNT_FACTOR = 0.9
 
-        self.BOX_STEP_SIZE = 1e-3
+        self.BOX_STEP_SIZE = 1e-4
         self.STD_STEP_SIZE = 1e-4  # 1e-4 action space noise (default: 2e-3)
 
         self.filename = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
         self.gains_range = [0.5, 1.5, 0.5, 1.5] # [vel min, vel max, ang min, ang max]
         self.std_range = [1e-3, 1, 1e-3, 3.14/2/10]# [vel min, vel max, ang min, ang max]
-        self.goal_radius_range = [0.3, 0.9] # 0.60m #0.375: best radius
+        self.goal_radius_range = [0.3, 0.9] # 0.60m: experiment setting #0.375: best radius
+        self.GOAL_RADIUS_STEP_SIZE = 1e-5
 
         self.action_vel_weight = 2
         self.action_ang_weight = np.pi/2

@@ -23,7 +23,7 @@ class BeliefStep(nn.Module):
 
 
         self.dt = arg.DELTA_T
-        self.P = torch.eye(5) * 1e-8
+        self.P = torch.eye(5) * 1e-6
         #self.goal_radius = arg.GOAL_RADIUS
         self.terminal_vel = arg.TERMINAL_VEL
         self.episode_len = arg.EPISODE_LEN
@@ -58,7 +58,7 @@ class BeliefStep(nn.Module):
         self.theta = (self.pro_gains, self.pro_noise_stds, self.obs_gains, self.obs_noise_stds, self.goal_radius)
 
 
-        self.P = torch.eye(5) * 1e-8 # change 4 to size function
+        self.P = torch.eye(5) * 1e-3 # change 4 to size function
         self.b = x, self.P  # belief
         self.state = self.Breshape(self.b, time, self.theta)
 
@@ -151,13 +151,21 @@ class BeliefStep(nn.Module):
         bx_ = bx_.t() # make a column vector
         A = self.A(bx_) # after dynamics
         P_ = A.mm(P).mm(A.t())+Q # P_ = APA^T+Q
-        if not is_pos_def(P_):
-            print("P_:", P_)
-            print("P:", P)
-            print("A:", A)
-            APA = A.mm(P).mm(A.t())
-            print("APA:", APA)
-            print("APA +:", is_pos_def(APA))
+
+        try:
+            is_pos_def(P_)
+        except:
+            print("not positive definite!")
+            print(P_)
+            P_ = (P_ + P_.t()) / 2 + 1e-6 * I  # make symmetric to avoid computational overflows
+
+        # if not is_pos_def(P_):
+        #     print("P_:", P_)
+        #     print("P:", P)
+        #     print("A:", A)
+        #     APA = A.mm(P).mm(A.t())
+        #     print("APA:", APA)
+        #     print("APA +:", is_pos_def(APA))
         error = ox - self.observations(bx_)
         S = H.mm(P_).mm(H.t()) + R # S = HPH^T+R
         K = P_.mm(H.t()).mm(torch.inverse(S)) # K = PHS^-1
@@ -165,10 +173,19 @@ class BeliefStep(nn.Module):
         I_KH = I - K.mm(H)
         P = I_KH.mm(P_)
 
+        try:
+            is_pos_def(P)
+        except:
+            print("not positive definite!")
+            print(P)
+            P = (P + P.t()) / 2 + 1e-6 * I  # make symmetric to avoid computational overflows
+
+        """
         if not is_pos_def(P):
             print("here")
             print("P:", P)
             P = (P + P.t()) / 2 + 1e-6 * I  # make symmetric to avoid computational overflows
+        """
 
         bx = bx.t() #return to a row vector
         b = bx.view(-1), P  # belief

@@ -8,8 +8,12 @@ r(s) = scale * exp(-0.5* s^T* R^-1 * s): reward gaussian distribution with mean 
 invS = invR +invP
 R(b) = \int b(s)*r(s) ds = c *sqrt(det(S)/det(P))* exp(-0.5* mu^T*(invP - invP*S*invP)*mu)
 
+R(b) =  \int b(s)*r(s) ds = 1/sqrt(det(2 pi (P+R)) * exp(-0.5*mu^t(R+P)^-1*mu)
+
 """
 import torch
+import numpy as np
+from FireflyEnv.env_utils import is_pos_def
 #from parameter import *
 
 def return_reward(episode, info, reached_target, b, goal_radius, REWARD, finetuning = 0):
@@ -39,6 +43,33 @@ def get_reward(b, goal_radus, REWARD):
     return reward
 
 def rewardFunc(rew_std, x, P, scale):
+    mu = x[:2]  # pos
+    R = torch.eye(2) * rew_std**2 # reward function is gaussian
+    P = P[:2, :2] # cov
+    S = R+P
+    if not is_pos_def(S):
+        print('R+P is not positive definite!')
+    alpha = -0.5 * mu @ S.inverse() @ mu.t()
+    #alpha = -0.5 * mu.matmul(torch.inverse(R+P)).matmul(mu.t())
+    reward = torch.exp(alpha) /2 / np.pi /torch.sqrt(S.det())
+
+    # normalization -> to make max reward as 1
+    mu_zero = torch.zeros(1,2)
+    alpha_zero = -0.5 * mu_zero @ R.inverse() @ mu_zero.t()
+    reward_zero = torch.exp(alpha_zero) /2 / np.pi /torch.sqrt(R.det())
+    reward = reward/reward_zero
+    ####################
+
+    reward = scale * reward  # adjustment for reward per timestep
+    if reward > scale:
+        print('reward is wrong!', reward)
+        print('mu', mu)
+        print('P', P)
+        print('R', R)
+    return reward.view(-1)
+
+"""
+def rewardFunc(rew_std, x, P, scale):
     R = torch.eye(2) * rew_std**2 # reward function is gaussian
     P = P[:2, :2] # cov
     invP = torch.inverse(P)
@@ -48,4 +79,7 @@ def rewardFunc(rew_std, x, P, scale):
     alpha = -0.5 * mu.matmul(invP - invP.mm(S).mm(invP)).matmul(mu)
     reward = torch.exp(alpha) * torch.sqrt(torch.det(S)/torch.det(P))
     reward = scale * reward # adjustment for reward per timestep
+    if reward > scale:
+        print('reward is wrong!', reward)
     return reward.view(-1)
+"""

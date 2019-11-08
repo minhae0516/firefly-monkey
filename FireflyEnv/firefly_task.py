@@ -50,11 +50,14 @@ class Model(nn.Module):
         self.episode_time = arg.EPISODE_LEN * self.dt
         self.world_size = arg.WORLD_SIZE
         self.BOX_STEP_SIZE = arg.BOX_STEP_SIZE
+        self.GOAL_RADIUS_STEP = arg.GOAL_RADIUS_STEP_SIZE
 
         self.box = 1.0 #arg.WORLD_SIZE #initial value
         self.rendering = Render()
         self.action_vel_weight = arg.action_vel_weight
         self.action_ang_weight = arg.action_ang_weight
+        self.min_goal_radius = arg.goal_radius_range[1]
+
         #self.reset()
 
     def reset(self, gains_range, std_range, goal_radius_range, goal_radius=None, pro_gains=None, pro_noise_stds=None):
@@ -78,7 +81,9 @@ class Model(nn.Module):
             self.pro_noise_stds = pro_noise_stds
 
         if goal_radius is None:
-            self.goal_radius = torch.zeros(1).uniform_(goal_radius_range[0], goal_radius_range[1])
+            self.min_goal_radius = max(self.min_goal_radius - self.GOAL_RADIUS_STEP, goal_radius_range[0])
+            self.goal_radius = torch.zeros(1).uniform_(self.min_goal_radius, goal_radius_range[1])
+            #self.goal_radius = torch.zeros(1).uniform_(goal_radius_range[0], goal_radius_range[1])
         else:
             self.goal_radius = goal_radius
 

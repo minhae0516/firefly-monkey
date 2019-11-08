@@ -10,6 +10,7 @@ from .nets import Actor, Critic
 from .utils import *
 from .ReplayMemory import ReplayMemory
 from .belief_step import BeliefStep # belief update of the agent
+import math
 
 #CUDA = torch.cuda.is_available()
 #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -61,6 +62,10 @@ class Agent():
 
         if action_noise is not None:
             mu += torch.Tensor(action_noise.noise()).to(self.device)
+
+        if math.isnan(mu.sum().item()):
+            print('action is NAN!')
+
         return mu.clamp(-1, 1)
 
     def update_parameters(self, batch):

@@ -12,7 +12,6 @@ import torch.nn as nn
 from torch.nn.parameter import Parameter
 from .env_utils import *
 from .plotter_gym import Render
-#from parameter import *
 
 def dynamics(x, a, dt, box, pro_gains, pro_noise_stds, action_vel_weight, action_ang_weight ):
     # dynamics

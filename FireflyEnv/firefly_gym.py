@@ -30,8 +30,8 @@ class FireflyEnv(gym.Env): #, proc_noise_std = PROC_NOISE_STD, obs_noise_std =OB
 
         self.model = Model(arg) # environment
         self.belief = BeliefStep(arg) # agent
-        self.action_dim = self.model.action_dim
-        self.state_dim = self.model.state_dim
+        #self.action_dim = self.model.action_dim
+        #self.state_dim = self.model.state_dim
         #self.reset(gains_range, std_range, goal_radius_range)
         self.rendering = Render()
 

@@ -30,14 +30,18 @@ torch.backends.cudnn.benchmark = False
 import datetime
 import pandas as pd
 
-filename = '20191029-145344-301002' # agent information
+filename = '20191107-154405-11111214' # agent information
 
-learning_arg = torch.load('../firefly-monkey-data/data/20191029-145344_arg.pkl')
+learning_arg = torch.load('../firefly-monkey-data/data/20191107-154405_arg.pkl')
 
 DISCOUNT_FACTOR = learning_arg['argument']['DISCOUNT_FACTOR']
 gains_range = learning_arg['argument']['gains_range']
 std_range = learning_arg['argument']['std_range']
 goal_radius_range = learning_arg['argument']['goal_radius_range']
+arg.WORLD_SIZE = learning_arg['argument']['WORLD_SIZE']
+arg.DELTA_T = learning_arg['argument']['DELTA_T']
+arg.EPISODE_TIME = learning_arg['argument']['EPISODE_TIME']
+arg.EPISODE_LEN = learning_arg['argument']['EPISODE_LEN']
 
 # df = pd.read_csv('../firefly-inverse-data/data/' + filename + '_log.csv',
 #                  usecols=['discount_factor','process gain forward', 'process gain angular', 'process noise std forward',
@@ -56,9 +60,11 @@ goal_radius_range = learning_arg['argument']['goal_radius_range']
 
 env = gym.make('FireflyTorch-v0') #,PROC_NOISE_STD,OBS_NOISE_STD)
 env.setup(arg)
+env.model.box = arg.WORLD_SIZE
+env.model.min_goal_radius = goal_radius_range[0]
 x, b, state, pro_gains, pro_noise_stds, obs_gains, obs_noise_stds, goal_radius  = env.reset(gains_range, std_range, goal_radius_range)
-state_dim = env.state_dim
-action_dim = env.action_dim
+state_dim = env.model.state_dim
+action_dim = env.model.action_dim
 
 MAX_EPISODE = 20
 std = 0.00001 #0.05

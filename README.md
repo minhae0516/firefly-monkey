@@ -1,6 +1,10 @@
-# Forward Control for Firefly Project
+# Inverse Rational Control for Firefly Project - Monkey data
 
-This codes are for the forward control of firefly project. 
+This codes are for the inverse rational control of firefly project. 
+This is the specialized set of codes for monkey data by setting parameters using real monkey experiment data. 
+The code is working with later version that Torch ver. 1.2.0 and Python ver. 3.7. 
+In addition, in order to use the same path setup to store data, try build the folder 'firefly-monkey-data/trained_agent' and 'firefly-monkey-data/data' at the same level of the folder that includes the codes. In order words, this set of codes 'firefly-monkey' and 'firefly-monkey-data' should be located at the same path lavel. 
+
 The agent learns the game (i.e., firefly project) based on off-policy model-based 
 reinforcement learning. 
 More specifically, the agent is allowed to have only partial observation of the environment, and

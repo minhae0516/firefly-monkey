@@ -30,7 +30,7 @@ class Config:
         self.DISCOUNT_FACTOR = 0.9
 
         self.BOX_STEP_SIZE = 1e-4
-        self.STD_STEP_SIZE = 1e-4  # 1e-4 action space noise (default: 2e-3)
+        self.STD_STEP_SIZE = 1e-5  # 1e-4 action space noise (default: 2e-3)
 
         self.filename = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
         self.gains_range = [0.5, 1.5, 0.5, 1.5] # [vel min, vel max, ang min, ang max]

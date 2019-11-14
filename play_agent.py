@@ -30,7 +30,7 @@ torch.backends.cudnn.benchmark = False
 import datetime
 import pandas as pd
 
-filename = '20191107-154405-11111214' # agent information
+filename = '20191107-154405' # agent information
 
 learning_arg = torch.load('../firefly-monkey-data/data/20191107-154405_arg.pkl')
 

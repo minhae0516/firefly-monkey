@@ -81,12 +81,11 @@ state_dim = env.state_dim
 action_dim = env.action_dim
 filename = arg.filename
 
-#argument = {'filename': filename,
-#            'argument': arg.__dict__}
+argument = {'filename': filename,
+            'argument': arg.__dict__}
+torch.save(argument, '../firefly-monkey-data/data/'+filename+'_arg.pkl')
 
-torch.save(arg, '../firefly-monkey-data/data/'+filename+'_arg.pkl')
-
-agent = Agent(state_dim, action_dim, arg,  filename, hidden_dim=128, gamma=arg.DISCOUNT_FACTOR, tau=0.001, actor_lr=arg.ACTOR_LR, critic_lr=arg.CRITIC_LR)
+agent = Agent(state_dim, action_dim, arg,  filename, hidden_dim=128, gamma=arg.DISCOUNT_FACTOR, tau=0.001)
 
 #"""
 # if you want to use pretrained agent, load the data as below

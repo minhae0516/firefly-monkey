@@ -17,7 +17,7 @@ import math
 
 
 class Agent():
-    def __init__(self, input_dim, action_dim, arg, filename=None, hidden_dim=128, gamma=0.99, tau=0.001, actor_lr=1e-4, critic_lr=1e-3, memory_size=1e6, device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")):
+    def __init__(self, input_dim, action_dim, arg, filename=None, hidden_dim=128, gamma=0.99, tau=0.001, memory_size=1e6, device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")):
 
         self.device = device
         self.input_dim = input_dim
@@ -33,8 +33,8 @@ class Agent():
         self._critic = Critic(input_dim, action_dim, hidden_dim).to(self.device)# target NW
 
 
-        self.actor_optim = Adam(self.actor.parameters(), lr=actor_lr)
-        self.critic_optim = Adam(self.critic.parameters(), lr=critic_lr)
+        self.actor_optim = Adam(self.actor.parameters(), lr=1e-4)
+        self.critic_optim = Adam(self.critic.parameters(), lr=1e-3)
 
         self.priority = False
         self.memory = ReplayMemory(int(memory_size), priority=self.priority)

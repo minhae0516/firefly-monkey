@@ -8,6 +8,7 @@ import pandas as pd
 from mplotter import *
 from DDPGv2Agent import Agent, Noise
 from collections import deque
+from FireflyEnv.env_utils import range_angle
 rewards = deque(maxlen=100)
 
 # read configuration parameters
@@ -30,14 +31,18 @@ torch.backends.cudnn.benchmark = False
 import datetime
 import pandas as pd
 
-filename = '20191111-151539' # agent information
+filename = '20191111-151539-12011329' # agent information
 
 learning_arg = torch.load('../firefly-monkey-data/data/20191111-151539_arg.pkl')
-
 DISCOUNT_FACTOR = learning_arg['argument']['DISCOUNT_FACTOR']
-gains_range = learning_arg['argument']['gains_range']
-std_range = learning_arg['argument']['std_range']
-goal_radius_range = learning_arg['argument']['goal_radius_range']
+
+gains_range = [1, 1, 1, 1] #learning_arg['argument']['gains_range']
+std_range = [0.05,0.05,0.05,0.05 ]#learning_arg['argument']['std_range']
+goal_radius_range = [0.9, 0.9]#learning_arg['argument']['goal_radius_range']
+
+#gains_range = learning_arg['argument']['gains_range']
+#std_range = learning_arg['argument']['std_range']
+#goal_radius_range = learning_arg['argument']['goal_radius_range']
 arg.WORLD_SIZE = learning_arg['argument']['WORLD_SIZE']
 arg.DELTA_T = learning_arg['argument']['DELTA_T']
 arg.EPISODE_TIME = learning_arg['argument']['EPISODE_TIME']
@@ -66,7 +71,7 @@ x, b, state, pro_gains, pro_noise_stds, obs_gains, obs_noise_stds, goal_radius  
 state_dim = env.model.state_dim
 action_dim = env.model.action_dim
 
-MAX_EPISODE = 20
+MAX_EPISODE = 1000
 std = 0.00001 #0.05
 noise = Noise(action_dim, mean=0., std=std)
 
@@ -78,7 +83,7 @@ episode = 0.
 
 
 COLUMNS = ['total time', 'ep', 'time step', 'reward', 'goal',
-           'a_vel', 'a_ang', 'true_r',
+           'a_vel', 'a_ang', 'true_r', 'true_rel_ang',
            'r', 'rel_ang', 'vel', 'ang_vel',
            'vecL1','vecL2','vecL3','vecL4','vecL5','vecL6','vecL7','vecL8','vecL9','vecL10',
            'vecL11','vecL12','vecL13','vecL14','vecL15',
@@ -101,6 +106,7 @@ while episode <= MAX_EPISODE:
         next_x, reached_target, next_b, reward, info, next_state = env.step(episode, x, b, action, t, theta, arg.REWARD)
         env.Brender(next_b, next_x, arg.WORLD_SIZE, goal_radius)  # display pop-up window (for every new action in each step)
 
+
         #time.sleep(0.1)  # delay for 0.005 sec
         if info['stop']:
             time.sleep(1)
@@ -110,6 +116,7 @@ while episode <= MAX_EPISODE:
 
         data = np.array([[tot_t, episode,  t, reward,
                           reached_target.item(),action[0][0].item(), action[0][1].item(), torch.norm(x.view(-1)[0:2]).item(),
+                          range_angle(x.view(-1)[2] - torch.atan2(-x.view(-1)[1], -x.view(-1)[0]).view(-1)).item(),
                           state[0][0].item(), state[0][1].item(), state[0][2].item(), state[0][3].item(),
                           state[0][5].item(), state[0][6].item(), state[0][7].item(), state[0][8].item(),
                           state[0][9].item(),
@@ -140,7 +147,7 @@ while episode <= MAX_EPISODE:
         if info['stop'] or TimeEnd: # if the monkey stops or pass the time limit, start the new firefly
             break
 
-history.to_csv(path_or_buf='../firefly-inverse-data/data/' + filename + '_history.csv', index=False)
+history.to_csv(path_or_buf='../firefly-monkey-data/data/' + filename + '_history.csv', index=False)
 
 #
 #

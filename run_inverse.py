@@ -43,14 +43,18 @@ tic = time.time()
 # df = pd.read_csv('../firefly-inverse-data/data/' + filename + '_log.csv', usecols=['discount_factor'])
 # DISCOUNT_FACTOR = df['discount_factor'][0]
 
-filename = '20191029-145344-310113' # agent information
+filename = '20191111-151539-12011329' # agent information
 
-learning_arg = torch.load('../firefly-monkey-data/data/20191029-145344_arg.pkl')
+learning_arg = torch.load('../firefly-monkey-data/data/20191111-151539_arg.pkl')
 
 DISCOUNT_FACTOR = learning_arg['argument']['DISCOUNT_FACTOR']
 arg.gains_range = learning_arg['argument']['gains_range']
 arg.std_range = learning_arg['argument']['std_range']
 arg.goal_radius_range = learning_arg['argument']['goal_radius_range']
+arg.WORLD_SIZE = learning_arg['argument']['WORLD_SIZE']
+arg.DELTA_T = learning_arg['argument']['DELTA_T']
+arg.EPISODE_TIME = learning_arg['argument']['EPISODE_TIME']
+arg.EPISODE_LEN = learning_arg['argument']['EPISODE_LEN']
 
 """
 df = pd.read_csv('../firefly-inverse-data/data/' + filename + '_log.csv',
@@ -68,20 +72,26 @@ arg.goal_radius_range = [df['goal radius'].min(), df['goal radius'].max()]
 """
 
 env = Model(arg) # build an environment
+env.box = arg.WORLD_SIZE
+env.min_goal_radius = arg.goal_radius_range[0]
 agent = Agent(env.state_dim, env.action_dim, arg,  filename, hidden_dim=128, gamma=DISCOUNT_FACTOR, tau=0.001) #, device = "cpu")
 agent.load(filename)
 
-
-"""
+# true theta
 true_theta = reset_theta(arg.gains_range, arg.std_range, arg.goal_radius_range)
 x_traj, obs_traj, a_traj, _ = trajectory(agent, true_theta, arg.INVERSE_BATCH_SIZE, env, arg, arg.gains_range, arg.std_range, arg.goal_radius_range) # generate true trajectory
 true_loss = getLoss(agent, x_traj, obs_traj, a_traj, true_theta, env, arg.gains_range, arg.std_range) # this is the lower bound of loss?
-"""
+print("true loss:{}".format(true_loss))
+print("true_theta:{}".format(true_theta))
+
+
+
 # read monkey data here
-a_traj, obs_traj, x_traj = data_reader(arg.monkey_filename)
+#a_traj, obs_traj, x_traj = data_reader(arg.monkey_filename)
 
 
-#theta = nn.Parameter(true_theta.data.clone()+0.5*true_theta.data.clone())
+
+#theta = nn.Parameter(true_theta.data.clone()+0.1*true_theta.data.clone())
 theta = nn.Parameter(reset_theta(arg.gains_range, arg.std_range, arg.goal_radius_range))
 ini_theta = theta.data.clone()
 

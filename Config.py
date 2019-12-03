@@ -28,6 +28,8 @@ class Config:
         self.REWARD = 10  # for max reward
         self.NUM_EPOCHS = 4# for replay memory
         self.DISCOUNT_FACTOR = 0.9
+        self.ACTOR_LR = 5e-5
+        self.CRITIC_LR = 5e-4
 
         self.BOX_STEP_SIZE = 1e-4
         self.STD_STEP_SIZE = 1e-5  # 1e-4 action space noise (default: 2e-3)
